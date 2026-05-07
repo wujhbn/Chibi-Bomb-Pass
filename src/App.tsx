@@ -118,10 +118,22 @@ class BombAudio {
 const audioSynth = new BombAudio();
 
 export default function App() {
-  const [playlist, setPlaylist] = useState<{id: number, url: string}[]>([
-    { id: 1, url: 'https://www.youtube.com/watch?v=4WX58CZ8dPA' } // Monkeys Spinning Monkeys (Always embeddable)
-  ]);
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
+  const [playlist, setPlaylist] = useState<{id: number, url: string}[]>(() => {
+    const saved = localStorage.getItem('bomb-playlist');
+    return saved ? JSON.parse(saved) : [{ id: 1, url: 'https://www.youtube.com/watch?v=4WX58CZ8dPA' }];
+  });
+  const [currentTrackIndex, setCurrentTrackIndex] = useState(() => {
+    const savedIndex = localStorage.getItem('bomb-track-index');
+    return savedIndex ? parseInt(savedIndex, 10) : 0;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('bomb-playlist', JSON.stringify(playlist));
+  }, [playlist]);
+
+  useEffect(() => {
+    localStorage.setItem('bomb-track-index', currentTrackIndex.toString());
+  }, [currentTrackIndex]);
   const [inputUrl, setInputUrl] = useState('');
   
   const [gameState, setGameState] = useState<GameState>('idle');
